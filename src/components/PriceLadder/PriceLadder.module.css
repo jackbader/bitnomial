@@ -37,3 +37,32 @@
     color: #ffffff;
     padding: 0 10px;
 }
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-weight: bold;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.footerContainer {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.centerButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+.centerButton:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}

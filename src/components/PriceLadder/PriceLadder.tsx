@@ -1,16 +1,13 @@
 import { FC, useEffect, useRef, useState } from "react";
+import { ListChildComponentProps, VariableSizeList } from "react-window";
 import { OrderBookData } from "../../types/orderBook";
 import {
+  generatePriceRange,
   getAggregatedOrderBookByPrice,
   getOrderBookCenterPrice,
-  generatePriceRange,
 } from "../../utils/orderBookUtils";
-import {
-  ListChildComponentProps,
-  VariableSizeList,
-  VariableSizeListProps,
-} from "react-window";
 import styles from "./PriceLadder.module.css";
+import { VerticalAlignCenter } from "@mui/icons-material"; // Add this import
 
 interface PriceLadderProps {
   orderBookData: OrderBookData;
@@ -21,7 +18,6 @@ const PriceLadder: FC<PriceLadderProps> = (props) => {
   const { orderBookData, lastTradedPrice } = props;
 
   const listRef = useRef<VariableSizeList>(null);
-  const hasDoneInitialScroll = useRef(false);
 
   const orderBookAggregatesByPrice =
     getAggregatedOrderBookByPrice(orderBookData);
@@ -33,13 +29,20 @@ const PriceLadder: FC<PriceLadderProps> = (props) => {
   console.log("center price", centerPrice);
   console.log("prices", prices);
 
-  // Handles initial scroll to center
+  const [selectedIndex, setSelectedIndex] = useState<number>(centerIndex);
+
+  // Handles initial scrolling to center & scrolling to new selected index
   useEffect(() => {
-    if (listRef.current && !hasDoneInitialScroll.current) {
-      listRef.current.scrollToItem(centerIndex, "center");
-      hasDoneInitialScroll.current = true;
+    if (selectedIndex !== null && listRef.current) {
+      listRef.current.scrollToItem(selectedIndex, "center");
     }
-  }, [centerIndex]);
+  }, [selectedIndex]);
+
+  const scrollToCenter = () => {
+    if (listRef.current) {
+      listRef.current.scrollToItem(centerIndex, "center");
+    }
+  };
 
   const getItemSize = () => 36;
   const rowRenderer = ({ index, style }: ListChildComponentProps) => {
@@ -48,6 +51,9 @@ const PriceLadder: FC<PriceLadderProps> = (props) => {
 
     return (
       <div style={style} className={styles.row}>
+        <div className={styles.buyColumn} onClick={() => null}>
+          Buy
+        </div>
         <div className={styles.bidColumn}>
           {entry && entry?.bidsTotalVolume > 0 && entry?.bidsTotalVolume}
         </div>
@@ -55,12 +61,25 @@ const PriceLadder: FC<PriceLadderProps> = (props) => {
         <div className={styles.askColumn}>
           {entry && entry?.asksTotalVolume > 0 && entry?.asksTotalVolume}
         </div>
+        <div className={styles.sellColumn} onClick={() => null}>
+          Sell
+        </div>
       </div>
     );
   };
 
   return (
     <div className={styles.priceLadderContainer}>
+      <div className={styles.header}>
+        <div className={styles.buyColumn}>Buy</div>
+        <div className={styles.bidColumn}>Bid</div>
+        <div className={`${styles.priceColumn} ${styles.columnDivider}`}>
+          Price
+        </div>
+        <div className={styles.askColumn}>Ask</div>
+        <div className={styles.sellColumn}>Sell</div>
+      </div>
+
       <VariableSizeList
         height={400}
         itemCount={prices.length}
@@ -71,6 +90,12 @@ const PriceLadder: FC<PriceLadderProps> = (props) => {
       >
         {rowRenderer}
       </VariableSizeList>
+
+      <div className={styles.footerContainer}>
+        <button onClick={scrollToCenter} className={styles.centerButton}>
+          <VerticalAlignCenter />
+        </button>
+      </div>
     </div>
   );
 };
