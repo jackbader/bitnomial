@@ -13,3 +13,9 @@ export interface OrderBookData {
   bids: OrderBookEntry[];
   asks: OrderBookEntry[];
 }
+
+export interface UserOrder {
+  price: number;
+  size: number;
+  side: OrderBookSide;
+}

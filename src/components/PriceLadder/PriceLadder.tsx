@@ -1,5 +1,6 @@
-import { FC, useEffect, useRef, useState } from "react";
-import { ListChildComponentProps, VariableSizeList } from "react-window";
+import { FormatAlignCenter, VerticalAlignCenter } from "@mui/icons-material"; // Add this import
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { OrderBookData } from "../../types/orderBook";
 import {
   generatePriceRange,
@@ -7,27 +8,46 @@ import {
   getOrderBookCenterPrice,
 } from "../../utils/orderBookUtils";
 import styles from "./PriceLadder.module.css";
-import { VerticalAlignCenter } from "@mui/icons-material"; // Add this import
+import { aggregateOrderBookEntries } from "./priceLadderUtils";
 
 interface PriceLadderProps {
   orderBookData: OrderBookData;
   lastTradedPrice: number;
+  priceRange: number;
 }
 
 const PriceLadder: FC<PriceLadderProps> = (props) => {
-  const { orderBookData, lastTradedPrice } = props;
+  const { orderBookData, lastTradedPrice, priceRange } = props;
 
-  const listRef = useRef<VariableSizeList>(null);
+  const listRef = useRef<FixedSizeList>(null);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
-  const orderBookAggregatesByPrice =
-    getAggregatedOrderBookByPrice(orderBookData);
-  const centerPrice = getOrderBookCenterPrice(lastTradedPrice, orderBookData);
-  const prices = generatePriceRange(centerPrice, 1000); // will generate 1000 prices below and above center price
-  const centerIndex = prices.findIndex((price) => price <= centerPrice);
+  const orderBookAggregates = useMemo(() => {
+    return aggregateOrderBookEntries(orderBookData);
+  }, [orderBookData]);
 
-  console.log("aggregatedData", orderBookAggregatesByPrice);
-  console.log("center price", centerPrice);
-  console.log("prices", prices);
+  const orderBookAggregatesByPrice = useMemo(() => {
+    return new Map(orderBookAggregates.map((entry) => [entry.price, entry]));
+  }, [orderBookAggregates]);
+
+  const { centerPrice, highestBid, lowestAsk } = useMemo(
+    () => getOrderBookCenterPrice(lastTradedPrice, orderBookData),
+    [orderBookData, lastTradedPrice]
+  );
+
+  const prices = useMemo(() => {
+    return generatePriceRange(highestBid, lowestAsk, priceRange);
+  }, [highestBid, lowestAsk, priceRange]);
+
+  const filteredPrices = useMemo(() => {
+    return !isCollapsed
+      ? prices
+      : prices.filter((price) => orderBookAggregatesByPrice.has(price));
+  }, [isCollapsed, prices, orderBookAggregatesByPrice]);
+
+  const centerIndex = !isCollapsed
+    ? priceRange
+    : filteredPrices.findIndex((price) => price <= centerPrice);
 
   const [selectedIndex, setSelectedIndex] = useState<number>(centerIndex);
 
@@ -38,62 +58,80 @@ const PriceLadder: FC<PriceLadderProps> = (props) => {
     }
   }, [selectedIndex]);
 
+  useEffect(() => {
+    setSelectedIndex(centerIndex);
+  }, [centerIndex]);
+
   const scrollToCenter = () => {
     if (listRef.current) {
       listRef.current.scrollToItem(centerIndex, "center");
     }
   };
 
-  const getItemSize = () => 36;
-  const rowRenderer = ({ index, style }: ListChildComponentProps) => {
-    const price = prices[index];
-    const entry = orderBookAggregatesByPrice.get(price);
-
-    return (
-      <div style={style} className={styles.row}>
-        <div className={styles.buyColumn} onClick={() => null}>
-          Buy
-        </div>
-        <div className={styles.bidColumn}>
-          {entry && entry?.bidsTotalVolume > 0 && entry?.bidsTotalVolume}
-        </div>
-        <div className={styles.priceColumn}>{price}</div>
-        <div className={styles.askColumn}>
-          {entry && entry?.asksTotalVolume > 0 && entry?.asksTotalVolume}
-        </div>
-        <div className={styles.sellColumn} onClick={() => null}>
-          Sell
-        </div>
-      </div>
-    );
+  const toggleIsCollapsed = () => {
+    setIsCollapsed((prev) => !prev);
   };
+
+  const rowRenderer = useCallback(
+    ({ index, style }: ListChildComponentProps) => {
+      const price = filteredPrices[index];
+      const entry = orderBookAggregatesByPrice.get(price);
+
+      const rowStyle = {
+        ...style,
+        backgroundColor:
+          price === highestBid
+            ? "rgba(0, 255, 0, 0.1)"
+            : price === lowestAsk
+            ? "rgba(255, 0, 0, 0.1)"
+            : "transparent",
+      };
+
+      return (
+        <div style={rowStyle} className={styles.row}>
+          <div className={styles.bidColumn}>
+            {entry && entry?.bidsTotalVolume > 0 && (
+              <span className={styles.bidPill}>{entry.bidsTotalVolume}</span>
+            )}
+          </div>
+          <div className={styles.priceColumn}>{price}</div>
+          <div className={styles.askColumn}>
+            {entry && entry?.asksTotalVolume > 0 && (
+              <span className={styles.askPill}>{entry.asksTotalVolume}</span>
+            )}
+          </div>
+        </div>
+      );
+    },
+    [filteredPrices, highestBid, lowestAsk, orderBookAggregatesByPrice]
+  );
 
   return (
     <div className={styles.priceLadderContainer}>
       <div className={styles.header}>
-        <div className={styles.buyColumn}>Buy</div>
         <div className={styles.bidColumn}>Bid</div>
-        <div className={`${styles.priceColumn} ${styles.columnDivider}`}>
-          Price
-        </div>
+        <div className={styles.priceColumn}>Price</div>
         <div className={styles.askColumn}>Ask</div>
-        <div className={styles.sellColumn}>Sell</div>
       </div>
 
-      <VariableSizeList
-        height={400}
-        itemCount={prices.length}
-        itemSize={getItemSize}
+      <FixedSizeList
+        height={396}
+        itemCount={filteredPrices.length}
+        itemSize={36}
         width="100%"
         ref={listRef}
         className={styles.list}
+        layout="vertical"
       >
         {rowRenderer}
-      </VariableSizeList>
+      </FixedSizeList>
 
       <div className={styles.footerContainer}>
-        <button onClick={scrollToCenter} className={styles.centerButton}>
+        <button onClick={toggleIsCollapsed} className={styles.centerButton}>
           <VerticalAlignCenter />
+        </button>
+        <button onClick={scrollToCenter} className={styles.centerButton}>
+          <FormatAlignCenter />
         </button>
       </div>
     </div>

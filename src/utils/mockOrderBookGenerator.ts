@@ -1,6 +1,7 @@
 import { OrderBookData, OrderBookEntry } from "../types/orderBook";
 
 export function generateMockOrderBookData(
+  ticker: string,
   length: number = 2000
 ): OrderBookData {
   const bids: OrderBookEntry[] = [];

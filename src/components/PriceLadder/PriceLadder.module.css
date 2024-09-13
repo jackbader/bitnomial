@@ -11,9 +11,9 @@
 }
 
 .list {
-    margin-top: 10px;
     scrollbar-width: none;  /* Firefox */
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .list::-webkit-scrollbar {
@@ -24,27 +24,45 @@
     height: 36px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .row:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.row .bidColumn {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.row .priceColumn {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.row .askColumn {
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 .bidColumn, .askColumn, .priceColumn {
     flex: 1;
-    text-align: center;
     color: #ffffff;
-    padding: 0 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
     font-weight: bold;
     color: #ffffff;
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.header > div {
+    height: 36px;
 }
 
 .footerContainer {
@@ -57,12 +75,37 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 5px;
+    padding: 4px;
     border-radius: 50%;
     transition: background-color 0.3s;
     color: white;
+    margin: 0;
+    display: flex;
 }
 
 .centerButton:hover {
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+.bidPill,
+.askPill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+}
+
+.bidPill {
+    background-color: #4caf50; /* Green */
+}
+
+.askPill {
+    background-color: #f44336; /* Red */
+}
+
+.columnDivider {
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
 }

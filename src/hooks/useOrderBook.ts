@@ -1,45 +1,40 @@
 import { useEffect, useState } from "react";
-import { OrderBookData } from "../types/orderBook";
+
+import { OrderBookData, OrderBookSide, UserOrder } from "../types/orderBook";
 import { generateMockOrderBookData } from "../utils/mockOrderBookGenerator";
 
-// TODO:
-// ideally from the "backend" we would recieve an object with an array of bids and asks...
-
-// we would then aggregate the bids and asks into a map with the price as the key and the entry or entries as the value so we can know which orders are the users orders
-// this would allow us to easily update the order book as we receive new data
-
-// we also just need to know the center price so we can calculate the spread and know where to center the list
-
-function useOrderBook() {
+const useOrderBook = (ticker: string) => {
   const [orderBookData, setOrderBookData] = useState<OrderBookData | null>(
     null
   );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const fetchOrderBook = async () => {
-      console.log("fetching initial order book!!!");
-      try {
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
+    // Simulating fetching order book data
+    // Will generate 15 bids and 15 asks
+    const mockData = generateMockOrderBookData(ticker, 30);
+    setOrderBookData(mockData);
+  }, [ticker]);
 
-        const mockOrderBookData = generateMockOrderBookData();
+  const addUserOrder = (userOrder: UserOrder) => {
+    setOrderBookData((prevData) => {
+      if (!prevData) return null;
 
-        console.log("mock order book data", mockOrderBookData);
+      const { price, size, side } = userOrder;
 
-        setOrderBookData(mockOrderBookData);
-        setLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error("An error occurred"));
-        setLoading(false);
-      }
-    };
+      const updatedSide = [
+        ...prevData[side === OrderBookSide.BID ? "bids" : "asks"],
+      ];
 
-    fetchOrderBook();
-  }, []);
+      updatedSide.push({ price, size, isUserOrder: true });
 
-  return { orderBookData, loading, error };
-}
+      return {
+        ...prevData,
+        [side === OrderBookSide.BID ? "bids" : "asks"]: updatedSide,
+      };
+    });
+  };
+
+  return { orderBookData, addUserOrder };
+};
 
 export default useOrderBook;
