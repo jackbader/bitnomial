@@ -13,7 +13,6 @@ import Button from "../common/Button";
 import styles from "./PriceLadderInnerList.module.css";
 import PriceLadderSubmitOrder from "./PriceLadderSubmitOrder";
 import { aggregateOrderBookEntries } from "./priceLadderUtils";
-import "./PriceLadderInnerList.css"; // Add this import
 
 interface PriceLadderInnerListProps {
   orderBookData: OrderBookData;
@@ -40,6 +39,7 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
 
+  const lastPriceAddedRef = useRef<number | null>(null);
   const priceInputRef = useRef<HTMLInputElement>(null);
   const sizeInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<FixedSizeList>(null);
@@ -52,12 +52,26 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     return aggregateOrderBookEntries(orderBookData);
   }, [orderBookData]);
 
+  const submitUserOrder = (userOrder: UserOrder) => {
+    addUserOrder(userOrder);
+    lastPriceAddedRef.current = userOrder.price;
+  };
+
+  const scrollToPrice = useCallback(
+    (price: number) => {
+      const index = pricesToShow.indexOf(price);
+      listRef.current?.scrollToItem(index, "smart");
+      setSelectedIndex(index);
+    },
+    [pricesToShow, listRef]
+  );
+
   const scrollToCenter = useCallback(() => {
     listRef.current?.scrollToItem(closestIndexToCenterPrice, "center");
     setSelectedIndex(closestIndexToCenterPrice);
   }, [closestIndexToCenterPrice]);
 
-  // scrolls list to center on initial render and when showAllPricesInRange changes
+  // handle auto scrolling to new prices
   useEffect(() => {
     if (!listRef.current) {
       return;
@@ -69,21 +83,21 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
       return;
     }
 
-    if (lastShouldShouldAllPrices.current !== shouldShowAllPrices) {
-      lastShouldShouldAllPrices.current = shouldShowAllPrices;
+    if (lastPriceAddedRef.current) {
+      scrollToPrice(lastPriceAddedRef.current);
+      lastPriceAddedRef.current = null;
+      return;
+    }
 
-      // scroll to center after list has updated
+    if (lastShouldShouldAllPrices.current !== shouldShowAllPrices) {
+      // sometimes the scrollToCenter is called before the list is rendered
       requestAnimationFrame(() => {
         scrollToCenter();
+        lastShouldShouldAllPrices.current = shouldShowAllPrices;
       });
       return;
     }
-  }, [
-    scrollToCenter,
-    hasDoneInitialScroll,
-    shouldShowAllPrices,
-    lastShouldShouldAllPrices,
-  ]);
+  }, [scrollToPrice, scrollToCenter, shouldShowAllPrices, pricesToShow]);
 
   const handleRowClick = (price: number) => {
     const clickedIndex = pricesToShow.indexOf(price);
@@ -198,14 +212,14 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
         itemSize={36}
         width="100%"
         ref={listRef}
-        className={`${styles.list} hideScrollbar`} // Add 'hideScrollbar' class
+        className={styles.list}
         layout="vertical"
       >
         {rowRenderer}
       </FixedSizeList>
 
       <PriceLadderSubmitOrder
-        addUserOrder={addUserOrder}
+        addUserOrder={submitUserOrder}
         price={price}
         size={size}
         setPrice={setPrice}

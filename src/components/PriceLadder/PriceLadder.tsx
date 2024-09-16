@@ -33,8 +33,6 @@ const PriceLadderNew: FC<PriceLadderNewProps> = (props) => {
     }, 0);
   }, [centerPrice, pricesToShow]);
 
-  console.log("closestIndexToCenterPrice", closestIndexToCenterPrice);
-
   if (!orderBookData) return null;
 
   return (

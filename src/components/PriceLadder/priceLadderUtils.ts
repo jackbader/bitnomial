@@ -1,11 +1,4 @@
-import { OrderBookData, OrderBookEntry } from "../../types/orderBook";
-
-interface AggregatedEntry {
-  totalBidsSize: number;
-  totalAsksSize: number;
-  totalUserBidsSize: number;
-  totalUserAsksSize: number;
-}
+import { OrderBookData } from "../../types/orderBook";
 
 export function aggregateOrderBookEntries(orderBookData: OrderBookData) {
   const aggregatedMap = new Map<
@@ -89,42 +82,20 @@ const getNonUserCenterPrice = (orderBookData: OrderBookData) => {
 };
 
 // Get all possible prices within a 1,000+/i range of order book prices
-const generateDetailedListOfPrices = (
-  orderBookData: OrderBookData,
-  additionalPricesOnEachSide: number
-) => {
-  const allNonUserBids = orderBookData.bids
-    .filter((entry) => !entry.isUserOrder)
-    .sort((a, b) => a.price - b.price);
-  const allNonUserAsks = orderBookData.asks
-    .filter((entry) => !entry.isUserOrder)
-    .sort((a, b) => a.price - b.price);
+const generateDetailedListOfPrices = (orderBookData: OrderBookData) => {
+  const combinedBidsAndAsks = [
+    ...orderBookData.bids,
+    ...orderBookData.asks,
+  ].sort((a, b) => a.price - b.price);
 
-  const lowestNonUserBidPrice = allNonUserBids[0].price;
-  const highestNonUserAskPrice =
-    allNonUserAsks[allNonUserAsks.length - 1].price;
-
-  const beforeBidPrices = generatePrices(
-    Math.max(0, lowestNonUserBidPrice - additionalPricesOnEachSide),
-    lowestNonUserBidPrice - 1,
+  const lowestPrice = combinedBidsAndAsks[0].price;
+  const highestPrice =
+    combinedBidsAndAsks[combinedBidsAndAsks.length - 1].price;
+  const allPrices = generatePrices(
+    Math.max(0, lowestPrice),
+    highestPrice,
     0
-  );
-  const bidToAskPrices = generatePrices(
-    lowestNonUserBidPrice,
-    highestNonUserAskPrice,
-    0
-  );
-  const afterAskPrices = generatePrices(
-    highestNonUserAskPrice + 1,
-    highestNonUserAskPrice + additionalPricesOnEachSide,
-    0
-  );
-
-  const allPrices = [
-    ...beforeBidPrices,
-    ...bidToAskPrices,
-    ...afterAskPrices,
-  ].sort((a, b) => b - a);
+  ).sort((a, b) => b - a);
 
   return allPrices;
 };
@@ -145,10 +116,7 @@ export const getPricesForOrderBook = (orderBookData: OrderBookData | null) => {
   }
 
   // Get all possible prices within a 1,000+/i range of order book prices
-  const allPrices = generateDetailedListOfPrices(
-    orderBookData,
-    additionalPricesOnEachSide
-  );
+  const allPrices = generateDetailedListOfPrices(orderBookData);
 
   // Get list of prices from the order book in descending order
   const orderBookPrices = getDescendingOrderBookPrices(orderBookData);
