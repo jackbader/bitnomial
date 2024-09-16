@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import useOrderBookApi from "../../hooks/useOrderBookApi";
 import PriceLadderInnerList from "./PriceLadderInnerList";
 import { getPricesForOrderBook } from "./priceLadderUtils";
@@ -11,27 +11,37 @@ const PriceLadderNew: FC<PriceLadderNewProps> = (props) => {
   const { ticker } = props;
   const { orderBookData, addUserOrder } = useOrderBookApi(ticker);
 
-  // center price is based on non-user bids and asks, because there is no order valdiation at this point
-  const { allPrices, orderBookPrices, centerPrice } = useMemo(
-    () => getPricesForOrderBook(orderBookData),
-    [orderBookData]
-  );
-
   const [shouldShowAllPrices, setShouldShowAllprices] = useState(false);
+  const [pricesToShow, setPricesToShow] = useState<number[]>([]);
+
+  // get list of prices to show
+  const {
+    allPrices,
+    orderBookPrices,
+    centerPrice: estimatedCenterPrice,
+  } = useMemo(() => getPricesForOrderBook(orderBookData), [orderBookData]);
+
+  const realCenterPrice = useMemo(() => {
+    // find the price in pricesToShow that is closest to the estimatedCenterPrice
+    // since the center price wont always be in pricesToShow, we need to find the closest price
+    return pricesToShow.reduce((minPrice, price) => {
+      const minPriceDifference = Math.abs(minPrice - estimatedCenterPrice);
+      const priceDifference = Math.abs(price - estimatedCenterPrice);
+      return priceDifference < minPriceDifference ? price : minPrice;
+    }, pricesToShow[0]);
+  }, [pricesToShow, estimatedCenterPrice]);
 
   const toggleShowAllPricesInRange = () => {
-    setShouldShowAllprices(!shouldShowAllPrices);
+    setShouldShowAllprices((prev) => !prev);
   };
 
-  const pricesToShow = shouldShowAllPrices ? allPrices : orderBookPrices;
-  const closestIndexToCenterPrice = useMemo(() => {
-    return pricesToShow.reduce((closest, price, index) => {
-      return Math.abs(price - centerPrice) <
-        Math.abs(pricesToShow[closest] - centerPrice)
-        ? index
-        : closest;
-    }, 0);
-  }, [centerPrice, pricesToShow]);
+  useEffect(() => {
+    if (shouldShowAllPrices) {
+      setPricesToShow(allPrices);
+    } else {
+      setPricesToShow(orderBookPrices);
+    }
+  }, [shouldShowAllPrices, allPrices, orderBookPrices]);
 
   if (!orderBookData) return null;
 
@@ -44,7 +54,7 @@ const PriceLadderNew: FC<PriceLadderNewProps> = (props) => {
           shouldShowAllPrices={shouldShowAllPrices}
           toggleShowAllPricesInRange={toggleShowAllPricesInRange}
           pricesToShow={pricesToShow}
-          closestIndexToCenterPrice={closestIndexToCenterPrice}
+          centerPrice={realCenterPrice}
           orderBookData={orderBookData}
         />
       )}

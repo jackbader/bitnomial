@@ -1,11 +1,11 @@
 import {
   FC,
   memo,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { OrderBookData, UserOrder } from "../../types/orderBook";
@@ -18,9 +18,9 @@ interface PriceLadderInnerListProps {
   orderBookData: OrderBookData;
   toggleShowAllPricesInRange: () => void;
   pricesToShow: number[];
-  closestIndexToCenterPrice: number;
   shouldShowAllPrices: boolean;
   ticker: string;
+  centerPrice: number;
   addUserOrder: (order: UserOrder) => void;
 }
 
@@ -30,12 +30,12 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     toggleShowAllPricesInRange,
     shouldShowAllPrices,
     pricesToShow,
-    closestIndexToCenterPrice,
+    centerPrice,
     ticker,
     addUserOrder,
   } = props;
 
-  const [selectedIndex, setSelectedIndex] = useState(closestIndexToCenterPrice);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
 
@@ -43,8 +43,12 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
   const priceInputRef = useRef<HTMLInputElement>(null);
   const sizeInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<FixedSizeList>(null);
-  const hasDoneInitialScroll = useRef(false);
-  const lastShouldShouldAllPrices = useRef(shouldShowAllPrices);
+  const shouldScrollToCenterRef = useRef(true);
+  const centerPriceRef = useRef(centerPrice);
+
+  useEffect(() => {
+    centerPriceRef.current = centerPrice;
+  }, [centerPrice]);
 
   // map of order prices and their aggregated order book volume sizes
   const orderBookPriceMap = useMemo(() => {
@@ -52,52 +56,40 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     return aggregateOrderBookEntries(orderBookData);
   }, [orderBookData]);
 
-  const submitUserOrder = (userOrder: UserOrder) => {
-    addUserOrder(userOrder);
-    lastPriceAddedRef.current = userOrder.price;
-  };
-
   const scrollToPrice = useCallback(
     (price: number) => {
       const index = pricesToShow.indexOf(price);
-      listRef.current?.scrollToItem(index, "smart");
-      setSelectedIndex(index);
+      if (index !== -1) {
+        listRef.current?.scrollToItem(index, "center");
+        setSelectedIndex(index);
+      }
     },
-    [pricesToShow, listRef]
+    [pricesToShow]
   );
 
   const scrollToCenter = useCallback(() => {
-    listRef.current?.scrollToItem(closestIndexToCenterPrice, "center");
-    setSelectedIndex(closestIndexToCenterPrice);
-  }, [closestIndexToCenterPrice]);
+    scrollToPrice(centerPriceRef.current);
+  }, [scrollToPrice]);
 
-  // handle auto scrolling to new prices
+  const submitUserOrder = (userOrder: UserOrder) => {
+    shouldScrollToCenterRef.current = false;
+    lastPriceAddedRef.current = userOrder.price;
+    addUserOrder(userOrder);
+  };
+
+  // handles:
+  // 1. initial scroll to center
+  // 2. scroll to center when shouldShowAllPrices is toggled
+  // 3. scroll to new order when a new order is added
   useEffect(() => {
-    if (!listRef.current) {
-      return;
-    }
-
-    if (!hasDoneInitialScroll.current) {
+    if (shouldScrollToCenterRef.current) {
       scrollToCenter();
-      hasDoneInitialScroll.current = true;
-      return;
-    }
-
-    if (lastPriceAddedRef.current) {
+    } else if (lastPriceAddedRef.current !== null) {
       scrollToPrice(lastPriceAddedRef.current);
       lastPriceAddedRef.current = null;
-      return;
     }
-
-    if (lastShouldShouldAllPrices.current !== shouldShowAllPrices) {
-      // sometimes the scrollToCenter is called before the list is rendered
-      requestAnimationFrame(() => {
-        scrollToCenter();
-        lastShouldShouldAllPrices.current = shouldShowAllPrices;
-      });
-      return;
-    }
-  }, [scrollToPrice, scrollToCenter, shouldShowAllPrices, pricesToShow]);
+    shouldScrollToCenterRef.current = true;
+  }, [shouldShowAllPrices, pricesToShow, scrollToCenter, scrollToPrice]);
 
   const handleRowClick = (price: number) => {
     const clickedIndex = pricesToShow.indexOf(price);
@@ -109,12 +101,6 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
-      const price = pricesToShow[selectedIndex];
-      handleRowClick(price);
-      return;
-    }
-
-    if (event.key === "b" || event.key === "s") {
       const price = pricesToShow[selectedIndex];
       handleRowClick(price);
       return;
@@ -144,7 +130,7 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     const price = pricesToShow[index];
     const item = orderBookPriceMap.get(price);
     const isSelected = index === selectedIndex;
-    const isCenterPrice = index === closestIndexToCenterPrice;
+    const isCenterPrice = price === centerPrice;
 
     const rowClassName = `${styles.row} ${
       isCenterPrice ? styles.centerPriceRow : ""
@@ -197,7 +183,7 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
         <Button onClick={toggleShowAllPricesInRange}>
           {shouldShowAllPrices ? "Collapse" : "Expand"} View
         </Button>
-        <Button onClick={() => scrollToCenter()}>Scroll to Center</Button>
+        <Button onClick={scrollToCenter}>Scroll to Center</Button>
       </div>
 
       <div className={styles.headerRow}>
@@ -234,7 +220,8 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
 export default memo(PriceLadderInnerList, (prevProps, nextProps) => {
   return (
     prevProps.orderBookData === nextProps.orderBookData &&
-    prevProps.shouldShowAllPrices === nextProps.shouldShowAllPrices &&
-    prevProps.pricesToShow === nextProps.pricesToShow
+    prevProps.pricesToShow.length === nextProps.pricesToShow.length &&
+    prevProps.centerPrice === nextProps.centerPrice &&
+    prevProps.shouldShowAllPrices === nextProps.shouldShowAllPrices
   );
 });

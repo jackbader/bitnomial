@@ -78,7 +78,15 @@ const getNonUserCenterPrice = (orderBookData: OrderBookData) => {
   const centerPrice = Math.round(
     (highestNonUserBidPrice + lowestNonUserAskPrice) / 2
   );
-  return centerPrice;
+
+  // find the closest price in the order book to the center price that is an ask
+  const closestPrice = orderBookData.asks.reduce((minPrice, ask) => {
+    const minPriceDifference = Math.abs(minPrice - centerPrice);
+    const priceDifference = Math.abs(ask.price - centerPrice);
+    return priceDifference < minPriceDifference ? ask.price : minPrice;
+  }, orderBookData.asks[0].price);
+
+  return closestPrice;
 };
 
 // Get all possible prices within a 1,000+/i range of order book prices
