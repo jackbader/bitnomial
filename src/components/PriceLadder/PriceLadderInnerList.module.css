@@ -1,5 +1,83 @@
+@import "../../styles/colors.css";
+
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+.list {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
 .row {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.rowText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.row:hover {
+  background-color: var(--secondary-color);
+}
+
+.selectedRowPrice {
+  background-color: rgba(177, 232, 255, 0.415);
+}
+
+.userOrderSize {
+  color: var(--highlight-color);
+  font-size: 0.8em;
+  margin-left: 4px;
+}
+
+.centerPriceRow {
+  border-bottom: 2px solid var(--center-price-border-color);
+}
+
+.centerRowText {
+  border-right: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+}
+
+.bidRowText {
+  background-color: #d4edda; /* Light green background */
+}
+
+.askRowText {
+  background-color: #f8d7da; /* Light red background */
 }

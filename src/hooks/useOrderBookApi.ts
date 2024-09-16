@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { OrderBookData, OrderBookSide, UserOrder } from "../types/orderBook";
 import { generateMockOrderBookData } from "../utils/mockOrderBookGenerator";
 
-const useOrderBook = (ticker: string) => {
+const useOrderBookApi = (ticker: string) => {
   const [orderBookData, setOrderBookData] = useState<OrderBookData | null>(
     null
   );
@@ -37,4 +37,4 @@ const useOrderBook = (ticker: string) => {
   return { orderBookData, addUserOrder };
 };
 
-export default useOrderBook;
+export default useOrderBookApi;

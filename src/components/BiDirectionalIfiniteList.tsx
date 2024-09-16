@@ -7,7 +7,7 @@ import {
 } from "../types/orderBook";
 import { getCenterPrice } from "../utils/orderBookUtils";
 import styles from "./BiDirectionalInfiniteList.module.css";
-import useOrderBook from "../hooks/useOrderBook";
+import useOrderBook from "../hooks/useOrderBookApi";
 
 interface BiDirectionalInfiniteListProps {
   orderBookData: OrderBookData;

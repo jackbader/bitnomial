@@ -1,10 +1,10 @@
 import styles from "./App.module.css";
-import PriceLadderNew from "./components/PriceLadder/PriceLadderNew";
+import PriceLadder from "./components/PriceLadder/PriceLadder";
 
 function App() {
   return (
     <div className={styles.container}>
-      <PriceLadderNew ticker="BTC_USD" range={1000} />
+      <PriceLadder ticker="BTC_USD" />
     </div>
   );
 }

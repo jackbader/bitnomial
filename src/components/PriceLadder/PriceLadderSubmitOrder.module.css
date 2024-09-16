@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.buttonContainer button {
+  flex: 1;
+}

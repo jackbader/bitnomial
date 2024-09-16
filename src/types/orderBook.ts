@@ -12,6 +12,7 @@ export interface OrderBookEntry {
 export interface OrderBookData {
   bids: OrderBookEntry[];
   asks: OrderBookEntry[];
+  lastTradedPrice: number;
 }
 
 export interface UserOrder {

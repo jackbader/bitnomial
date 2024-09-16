@@ -23,7 +23,7 @@ export function generateMockOrderBookData(
   bids.sort((a, b) => b.price - a.price);
   asks.sort((a, b) => a.price - b.price);
 
-  const orderBookData = { bids, asks };
+  const orderBookData = { bids, asks, ticker, lastTradedPrice: 50000 };
 
   return orderBookData;
 }
