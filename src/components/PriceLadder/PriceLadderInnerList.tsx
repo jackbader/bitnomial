@@ -4,6 +4,7 @@ import { OrderBookPriceMap, UserOrder } from "../../types/orderBook";
 import Button from "../common/Button";
 import styles from "./PriceLadderInnerList.module.css";
 import PriceLadderSubmitOrder from "./PriceLadderSubmitOrder";
+import classNames from "classnames";
 
 interface PriceLadderInnerListProps {
   orderBookPriceMap: OrderBookPriceMap;
@@ -101,7 +102,7 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     }
 
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-      const direction = event.key === "ArrowUp" ? -1 : 1;
+      const direction = event.key === "ArrowUp" ? 1 : -1;
       const MIN_INDEX = 0;
       const MAX_INDEX = pricesToShow.length - 1;
       const newSelectedIndex = Math.max(
@@ -123,19 +124,32 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
   const rowRenderer = ({ index, style }: ListChildComponentProps) => {
     const price = pricesToShow[index];
     const item = orderBookPriceMap.get(price);
+
     const isSelected = index === selectedIndex;
     const isMidPointPrice = price === midPointPrice;
 
-    const rowClassName = `${styles.row} ${
-      isMidPointPrice ? styles.midPointPriceRow : ""
-    } ${isSelected ? styles.selectedRow : ""}`;
+    const rowClassName = classNames(styles.row, {
+      [styles.midPointPriceRow]: isMidPointPrice,
+      [styles.selectedRow]: isSelected,
+    });
 
-    const hasBids = item?.totalBidsSize !== undefined && item.totalBidsSize > 0;
-    const hasUserBids =
-      item?.totalUserBids !== undefined && item.totalUserBids > 0;
-    const hasAsks = item?.totalAsksSize !== undefined && item.totalAsksSize > 0;
-    const hasUserAsks =
-      item?.totalUserAsks !== undefined && item.totalUserAsks > 0;
+    const totalBidsSize = item?.totalBidsSize ?? 0;
+    const totalUserBids = item?.totalUserBids ?? 0;
+    const totalAsksSize = item?.totalAsksSize ?? 0;
+    const totalUserAsks = item?.totalUserAsks ?? 0;
+
+    const hasBids = totalBidsSize > 0;
+    const hasUserBids = totalUserBids > 0;
+    const hasAsks = totalAsksSize > 0;
+    const hasUserAsks = totalUserAsks > 0;
+
+    const bidClassName = classNames(styles.rowText, {
+      [styles.bidRowText]: hasBids,
+    });
+
+    const askClassName = classNames(styles.rowText, {
+      [styles.askRowText]: hasAsks,
+    });
 
     return (
       <div
@@ -144,23 +158,19 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
         style={style}
         onClick={() => handleRowClick(price)}
       >
-        <div
-          className={`${styles.rowText} ${hasBids ? styles.bidRowText : ""}`}
-        >
-          {hasBids ? item?.totalBidsSize : ""}
+        <div className={bidClassName}>
+          {hasBids ? totalBidsSize : ""}
           {hasUserBids && (
-            <span className={styles.userOrderSize}>({item.totalUserBids})</span>
+            <span className={styles.userOrderSize}>({totalUserBids})</span>
           )}
         </div>
-        <div className={`${styles.rowText} ${styles.centerRowText}`}>
+        <div className={classNames(styles.rowText, styles.centerRowText)}>
           {price}
         </div>
-        <div
-          className={`${styles.rowText} ${hasAsks ? styles.askRowText : ""}`}
-        >
-          {hasAsks ? item?.totalAsksSize : ""}
+        <div className={askClassName}>
+          {hasAsks ? totalAsksSize : ""}
           {hasUserAsks && (
-            <span className={styles.userOrderSize}>({item.totalUserAsks})</span>
+            <span className={styles.userOrderSize}>({totalUserAsks})</span>
           )}
         </div>
       </div>

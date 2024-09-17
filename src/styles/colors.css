@@ -1,8 +1,16 @@
 :root {
-    --primary-color: #83d8ff;
-    --secondary-color: #f0f0f0;
-    --border-color: #c6c6c6;
-    --highlight-color: orange;
-    --center-price-border-color: #9a9a9a;
+    --background-color: #1E1E2E;
+    --text-color: #E0E0E0;
+    --border-color: #4A4A5E;
+
+    --primary-color: #6E56CF;
+    --secondary-color: #4A4A5E;
+
+    --buy-green: #4CAF50;
+    --sell-red: #F44336;
+
+    --error-color: #F44336;
+
+    --orange: #F1A10D;
+    --yellow: #FFD700;
 }
-  
