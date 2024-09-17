@@ -3,7 +3,7 @@ import styles from "./Button.module.css";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: "default" | "red";
+  variant?: "default" | "red" | "green";
 }
 
 const Button: React.FC<ButtonProps> = ({

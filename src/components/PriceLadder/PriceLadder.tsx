@@ -7,19 +7,21 @@ import {
 } from "../../types/orderBook";
 import { aggregateOrderBookEntries } from "./priceLadderUtils";
 import PriceLadderInnerList from "./PriceLadderInnerList";
-interface PriceLadderNewProps {
+
+interface PriceLadderProps {
   ticker: string;
 }
 
-const PriceLadderNew: FC<PriceLadderNewProps> = (props) => {
+const PriceLadder: FC<PriceLadderProps> = (props) => {
   const { ticker } = props;
   const { orderBookData, addUserOrder } = useOrderBookApi(ticker);
+  const tickerDisplayName = orderBookData?.tickerDisplayName || ticker;
 
   const [allPrices, setAllPrices] = useState<number[]>([]);
   const [orderBookPriceMap, setOrderBookPriceMap] = useState<OrderBookPriceMap>(
     new Map()
   );
-  const [shouldShowAllPrices, setShouldShowAllPrices] = useState(true);
+  const [shouldShowAllPrices, setShouldShowAllPrices] = useState(false);
 
   const submitUserOrder = (userOrder: UserOrder) => {
     // if allPrices doesnt contain this price
@@ -121,18 +123,16 @@ const PriceLadderNew: FC<PriceLadderNewProps> = (props) => {
       );
 
   return (
-    <div>
-      <PriceLadderInnerList
-        addUserOrder={submitUserOrder}
-        ticker={ticker}
-        shouldShowAllPrices={shouldShowAllPrices}
-        toggleShowAllPricesInRange={toggleShowAllPrices}
-        pricesToShow={pricesToShow}
-        midPointPrice={midPointPrice}
-        orderBookPriceMap={orderBookPriceMap}
-      />
-    </div>
+    <PriceLadderInnerList
+      addUserOrder={submitUserOrder}
+      tickerDisplayName={tickerDisplayName}
+      shouldShowAllPrices={shouldShowAllPrices}
+      toggleShowAllPricesInRange={toggleShowAllPrices}
+      pricesToShow={pricesToShow}
+      midPointPrice={midPointPrice}
+      orderBookPriceMap={orderBookPriceMap}
+    />
   );
 };
 
-export default PriceLadderNew;
+export default PriceLadder;

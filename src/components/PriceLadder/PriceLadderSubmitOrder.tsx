@@ -59,7 +59,7 @@ const PriceLadderSubmitOrder = (props: PriceLadderSubmitOrderProps) => {
   };
 
   return (
-    <div className={styles.container}>
+    <div>
       <input
         type="text"
         inputMode="numeric"
@@ -68,7 +68,6 @@ const PriceLadderSubmitOrder = (props: PriceLadderSubmitOrderProps) => {
         onChange={handleInputChange(setPrice)}
         placeholder="Price"
         ref={priceInputRef}
-        className={styles.input}
       />
       <input
         type="text"
@@ -78,11 +77,12 @@ const PriceLadderSubmitOrder = (props: PriceLadderSubmitOrderProps) => {
         onChange={handleInputChange(setSize)}
         placeholder="Quantity"
         ref={sizeInputRef}
-        className={styles.input}
       />
-      {error && <div className={styles.error}>{error}</div>}
-      <div className={styles.buttonContainer}>
-        <Button onClick={() => handleSubmit(OrderBookSide.BID)}>Buy</Button>
+      {error && <div>{error}</div>}
+      <div>
+        <Button onClick={() => handleSubmit(OrderBookSide.BID)} variant="green">
+          Buy
+        </Button>
         <Button onClick={() => handleSubmit(OrderBookSide.ASK)} variant="red">
           Sell
         </Button>

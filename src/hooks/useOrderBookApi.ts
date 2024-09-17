@@ -17,6 +17,7 @@ const useOrderBookApi = (ticker: string) => {
     //   bids: [],
     //   lastTradedPrice: 50000,
     //   ticker: "BTCUSDT",
+    //   tickerDisplayName: "BTC/USDT",
     // };
 
     setOrderBookData(mockData);

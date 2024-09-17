@@ -7,6 +7,7 @@ export function generateMockOrderBookData(
   const bids: OrderBookEntry[] = [];
   const asks: OrderBookEntry[] = [];
 
+  // TODO clean up and make this more random
   for (let i = 0; i < length; i++) {
     const price =
       i < length / 2 ? 50000 - i * 10 : 50010 + (i - length / 2) * 10;
@@ -23,7 +24,13 @@ export function generateMockOrderBookData(
   bids.sort((a, b) => b.price - a.price);
   asks.sort((a, b) => a.price - b.price);
 
-  const orderBookData = { bids, asks, ticker, lastTradedPrice: 50000 };
+  const orderBookData = {
+    bids,
+    asks,
+    ticker,
+    tickerDisplayName: "BTC/USD",
+    lastTradedPrice: 50000,
+  };
 
   return orderBookData;
 }

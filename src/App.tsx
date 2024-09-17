@@ -3,7 +3,7 @@ import PriceLadder from "./components/PriceLadder/PriceLadder";
 
 function App() {
   return (
-    <div className={styles.container}>
+    <div className={styles.appContainer}>
       <PriceLadder ticker="BTC_USD" />
     </div>
   );

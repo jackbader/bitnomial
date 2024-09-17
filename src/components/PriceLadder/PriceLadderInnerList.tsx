@@ -1,24 +1,24 @@
-import { FC, useEffect, useRef, useState, useMemo } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { OrderBookPriceMap, UserOrder } from "../../types/orderBook";
 import Button from "../common/Button";
 import styles from "./PriceLadderInnerList.module.css";
+import PriceLadderRow from "./PriceLadderRow";
 import PriceLadderSubmitOrder from "./PriceLadderSubmitOrder";
-import classNames from "classnames";
 
 interface PriceLadderInnerListProps {
   orderBookPriceMap: OrderBookPriceMap;
   toggleShowAllPricesInRange: () => void;
   pricesToShow: number[];
   shouldShowAllPrices: boolean;
-  ticker: string;
+  tickerDisplayName: string;
   midPointPrice: number;
   addUserOrder: (order: UserOrder) => void;
 }
 
 // Configurable constants
-const ITEM_SIZE = 20;
-const VIEWABLE_ROWS_ABOVE_AND_BELOW_MIDPOINT = 10;
+const ITEM_SIZE = 22;
+const VIEWABLE_ROWS_ABOVE_AND_BELOW_MIDPOINT = 8;
 
 // Derived constants - DO NOT MODIFY DIRECTLY
 const TOTAL_VIEWABLE_ROWS = 2 * VIEWABLE_ROWS_ABOVE_AND_BELOW_MIDPOINT + 1;
@@ -31,11 +31,13 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     shouldShowAllPrices,
     pricesToShow,
     midPointPrice,
-    ticker,
+    tickerDisplayName,
     addUserOrder,
   } = props;
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(
+    pricesToShow.indexOf(midPointPrice)
+  );
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
 
@@ -52,6 +54,8 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     requestAnimationFrame(() => {
       listRef.current?.scrollToItem(index, "center");
     });
+
+    setSelectedIndex(index);
   };
 
   const clickedShouldShowAllPrices = () => {
@@ -67,10 +71,6 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
   // handles scrolling to a specific order when a user submits an order
   useEffect(() => {
     if (orderPriceToScrollToOnNextRender.current) {
-      console.log(
-        "scroll to specific order",
-        orderPriceToScrollToOnNextRender.current
-      );
       scrollToPrice(orderPriceToScrollToOnNextRender.current);
       orderPriceToScrollToOnNextRender.current = null;
     }
@@ -102,7 +102,7 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     }
 
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-      const direction = event.key === "ArrowUp" ? 1 : -1;
+      const direction = event.key === "ArrowUp" ? -1 : 1;
       const MIN_INDEX = 0;
       const MAX_INDEX = pricesToShow.length - 1;
       const newSelectedIndex = Math.max(
@@ -121,62 +121,6 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     };
   });
 
-  const rowRenderer = ({ index, style }: ListChildComponentProps) => {
-    const price = pricesToShow[index];
-    const item = orderBookPriceMap.get(price);
-
-    const isSelected = index === selectedIndex;
-    const isMidPointPrice = price === midPointPrice;
-
-    const rowClassName = classNames(styles.row, {
-      [styles.midPointPriceRow]: isMidPointPrice,
-      [styles.selectedRow]: isSelected,
-    });
-
-    const totalBidsSize = item?.totalBidsSize ?? 0;
-    const totalUserBids = item?.totalUserBids ?? 0;
-    const totalAsksSize = item?.totalAsksSize ?? 0;
-    const totalUserAsks = item?.totalUserAsks ?? 0;
-
-    const hasBids = totalBidsSize > 0;
-    const hasUserBids = totalUserBids > 0;
-    const hasAsks = totalAsksSize > 0;
-    const hasUserAsks = totalUserAsks > 0;
-
-    const bidClassName = classNames(styles.rowText, {
-      [styles.bidRowText]: hasBids,
-    });
-
-    const askClassName = classNames(styles.rowText, {
-      [styles.askRowText]: hasAsks,
-    });
-
-    return (
-      <div
-        className={rowClassName}
-        key={price}
-        style={style}
-        onClick={() => handleRowClick(price)}
-      >
-        <div className={bidClassName}>
-          {hasBids ? totalBidsSize : ""}
-          {hasUserBids && (
-            <span className={styles.userOrderSize}>({totalUserBids})</span>
-          )}
-        </div>
-        <div className={classNames(styles.rowText, styles.centerRowText)}>
-          {price}
-        </div>
-        <div className={askClassName}>
-          {hasAsks ? totalAsksSize : ""}
-          {hasUserAsks && (
-            <span className={styles.userOrderSize}>({totalUserAsks})</span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   // Calculate the initial scroll offset only once
   const initialScrollOffset = useMemo(() => {
     const midPointIndex = pricesToShow.indexOf(midPointPrice);
@@ -186,11 +130,28 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // only run once
 
-  return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>{ticker}</h2>
+  const rowRenderer = ({ index, style }: ListChildComponentProps) => {
+    const price = pricesToShow[index];
+    const item = orderBookPriceMap.get(price);
 
-      <div className={styles.buttonContainer}>
+    return (
+      <PriceLadderRow
+        key={price}
+        price={price}
+        item={item}
+        isSelected={index === selectedIndex}
+        isMidPointPrice={price === midPointPrice}
+        onClick={handleRowClick}
+        style={style}
+      />
+    );
+  };
+
+  return (
+    <div className={styles.priceLadderContainer}>
+      <h2 className={styles.tickerDisplayName}>{tickerDisplayName}</h2>
+
+      <div>
         <Button
           disabled={orderBookPriceMap.size === 0}
           onClick={clickedShouldShowAllPrices}
@@ -203,10 +164,10 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
         </Button>
       </div>
 
-      <div className={styles.headerRow}>
-        <div className={styles.rowText}>Bids</div>
-        <div className={styles.rowText}>Price</div>
-        <div className={styles.rowText}>Asks</div>
+      <div className={styles.priceLadderHeader}>
+        <div>Bids</div>
+        <div>Price</div>
+        <div>Asks</div>
       </div>
 
       <FixedSizeList

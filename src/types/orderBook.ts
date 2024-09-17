@@ -13,6 +13,8 @@ export interface OrderBookData {
   bids: OrderBookEntry[];
   asks: OrderBookEntry[];
   lastTradedPrice: number;
+  ticker: string;
+  tickerDisplayName: string;
 }
 
 export interface UserOrder {

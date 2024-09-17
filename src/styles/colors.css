@@ -1,16 +1,11 @@
 :root {
-    --background-color: #1E1E2E;
-    --text-color: #E0E0E0;
-    --border-color: #4A4A5E;
-
-    --primary-color: #6E56CF;
-    --secondary-color: #4A4A5E;
-
-    --buy-green: #4CAF50;
-    --sell-red: #F44336;
-
-    --error-color: #F44336;
-
-    --orange: #F1A10D;
-    --yellow: #FFD700;
+  --cyber-pink: #ff2a6d;
+  --cyber-light-blue: #d1f7ff;
+  --cyber-blue: #05d9e8;
+  --cyber-teal: #005678;
+  --cyber-dark-navy: #01012b;
+  --cyber-black: #010015;
+  --cyber-green: #00ff99;
+  --cyber-orange: #ffa500;
+  --cyber-blue-transparent: rgb(5 217 232 / 0.2);
 }
