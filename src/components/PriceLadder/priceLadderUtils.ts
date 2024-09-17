@@ -1,6 +1,8 @@
-import { OrderBookData } from "../../types/orderBook";
+import { OrderBookData, OrderBookPriceMap } from "../../types/orderBook";
 
-export function aggregateOrderBookEntries(orderBookData: OrderBookData) {
+export function aggregateOrderBookEntries(
+  orderBookData: OrderBookData
+): OrderBookPriceMap {
   const aggregatedMap = new Map<
     number,
     {

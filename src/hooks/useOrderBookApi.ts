@@ -9,9 +9,16 @@ const useOrderBookApi = (ticker: string) => {
   );
 
   useEffect(() => {
-    // Simulating fetching order book data
-    // Will generate 15 bids and 15 asks
-    const mockData = generateMockOrderBookData(ticker, 30);
+    const mockData = generateMockOrderBookData(ticker, 100);
+
+    // empty order book
+    // const mockData = {
+    //   asks: [],
+    //   bids: [],
+    //   lastTradedPrice: 50000,
+    //   ticker: "BTCUSDT",
+    // };
+
     setOrderBookData(mockData);
   }, [ticker]);
 

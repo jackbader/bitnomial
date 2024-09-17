@@ -1,6 +1,7 @@
 import { OrderBookSide, UserOrder } from "../../types/orderBook";
 import Button from "../common/Button";
 import styles from "./PriceLadderSubmitOrder.module.css";
+import { useState } from "react";
 
 interface PriceLadderSubmitOrderProps {
   price: string;
@@ -22,6 +23,7 @@ const PriceLadderSubmitOrder = (props: PriceLadderSubmitOrderProps) => {
     sizeInputRef,
     addUserOrder,
   } = props;
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange =
     (setter: React.Dispatch<React.SetStateAction<string>>) =>
@@ -35,8 +37,18 @@ const PriceLadderSubmitOrder = (props: PriceLadderSubmitOrderProps) => {
   const handleSubmit = (side: OrderBookSide) => {
     const priceValue = parseInt(price);
     const sizeValue = parseInt(size);
-    if (isNaN(priceValue) || isNaN(sizeValue)) return;
 
+    if (isNaN(priceValue) || isNaN(sizeValue)) {
+      setError("Please enter valid numbers for price and quantity.");
+      return;
+    }
+
+    if (sizeValue <= 0) {
+      setError("Quantity must be greater than 0.");
+      return;
+    }
+
+    setError(null);
     addUserOrder({
       side,
       price: priceValue,
@@ -68,6 +80,7 @@ const PriceLadderSubmitOrder = (props: PriceLadderSubmitOrderProps) => {
         ref={sizeInputRef}
         className={styles.input}
       />
+      {error && <div className={styles.error}>{error}</div>}
       <div className={styles.buttonContainer}>
         <Button onClick={() => handleSubmit(OrderBookSide.BID)}>Buy</Button>
         <Button onClick={() => handleSubmit(OrderBookSide.ASK)} variant="red">

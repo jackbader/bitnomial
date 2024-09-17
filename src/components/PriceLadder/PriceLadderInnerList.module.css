@@ -6,15 +6,17 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: var(--secondary-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.1); /* Transparent background */
+  backdrop-filter: blur(10px); /* Glass effect */
+  border-radius: 16px; /* Increased border radius */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
 }
 
 .title {
   font-size: 24px;
   margin-bottom: 20px;
-  color: #333;
+  color: white;
 }
 
 .buttonContainer {
@@ -32,14 +34,17 @@
 }
 
 .list {
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
 }
 
@@ -49,14 +54,15 @@
   align-items: center;
   text-align: center;
   flex: 1;
+  padding: 8px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.row:hover {
-  background-color: var(--secondary-color);
-}
-
-.selectedRowPrice {
-  background-color: rgba(177, 232, 255, 0.415);
+.selectedRow {
+  background-color: rgba(100, 149, 237, 0.3); /* Cornflower blue with opacity */
+  backdrop-filter: blur(12px);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(100, 149, 237, 0.5);
 }
 
 .userOrderSize {
@@ -65,19 +71,22 @@
   margin-left: 4px;
 }
 
-.centerPriceRow {
-  border-bottom: 2px solid var(--center-price-border-color);
+.midPointPriceRow {
+  background-color: rgba(255, 215, 0, 0.15); /* Gold color with low opacity */
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 215, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .centerRowText {
-  border-right: 1px solid var(--border-color);
-  border-left: 1px solid var(--border-color);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bidRowText {
-  background-color: #d4edda; /* Light green background */
+  background-color: rgba(0, 200, 0, 0.9);
 }
 
 .askRowText {
-  background-color: #f8d7da; /* Light red background */
+  background-color: rgba(255, 50, 50, 0.9); 
 }

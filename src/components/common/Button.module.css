@@ -35,3 +35,8 @@
 .red:active {
   background-color: #b71c1c;
 }
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

@@ -20,3 +20,12 @@ export interface UserOrder {
   size: number;
   side: OrderBookSide;
 }
+
+export interface OrderBookPriceMapEntry {
+  totalBidsSize: number;
+  totalAsksSize: number;
+  totalUserBids: number;
+  totalUserAsks: number;
+}
+
+export type OrderBookPriceMap = Map<number, OrderBookPriceMapEntry>;
