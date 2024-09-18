@@ -18,7 +18,7 @@
 
 .input {
     background-color: var(--cyber-dark-navy);
-    border: 2px solid var(--cyber-blue);
+    border: 2px solid var(--cyber-blue-transparent);
     border-radius: 4px;
     color: var(--cyber-light-blue);
     font-size: 16px;
@@ -28,11 +28,11 @@
 
 .input:focus {
     outline: none;
-    box-shadow: 0 0 10px var(--cyber-blue);
 }
 
 .input::placeholder {
-    color: var(--cyber-blue);
+    color: var(--cyber-light-blue);
+    opacity: 0.4;
 }
 
 .error {
