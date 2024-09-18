@@ -48,7 +48,7 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
 
     const scrollToPrice = (price: number) => {
         const index = pricesToShow.indexOf(price);
-        // on next frame
+
         requestAnimationFrame(() => {
             listRef.current?.scrollToItem(index, 'center');
         });
@@ -103,10 +103,12 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
             const direction = event.key === 'ArrowUp' ? -1 : 1;
             const MIN_INDEX = 0;
             const MAX_INDEX = pricesToShow.length - 1;
-            const newSelectedIndex = Math.max(
-                MIN_INDEX,
-                Math.min(selectedIndex + direction, MAX_INDEX)
-            );
+            let newSelectedIndex = selectedIndex + direction;
+            if (newSelectedIndex < MIN_INDEX) {
+                newSelectedIndex = MIN_INDEX;
+            } else if (newSelectedIndex > MAX_INDEX) {
+                newSelectedIndex = MAX_INDEX;
+            }
             listRef.current?.scrollToItem(newSelectedIndex, 'smart');
             setSelectedIndex(newSelectedIndex);
         }
@@ -119,7 +121,6 @@ const PriceLadderInnerList: FC<PriceLadderInnerListProps> = (props) => {
         };
     });
 
-    // Calculate the initial scroll offset only once
     const initialScrollOffset = useMemo(() => {
         const midPointIndex = pricesToShow.indexOf(midPointPrice);
         const indexOffset = VIEWABLE_ROWS_ABOVE_AND_BELOW_MIDPOINT;

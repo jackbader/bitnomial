@@ -4,21 +4,19 @@ export function generateMockOrderBookData(ticker: string, length: number = 2000)
     const bids: OrderBookEntry[] = [];
     const asks: OrderBookEntry[] = [];
 
-    // TODO clean up and make this more random
+    const midPoint = Math.floor(length / 2);
+
     for (let i = 0; i < length; i++) {
-        const price = i < length / 2 ? 50000 - i * 10 : 50010 + (i - length / 2) * 10;
         const size = Math.floor(Math.random() * 100) + 1;
 
-        if (i < length / 2) {
+        if (i < midPoint) {
+            const price = 50000 - i * 10;
             bids.push({ price, size, isUserOrder: false });
         } else {
+            const price = 50010 + (i - midPoint) * 10;
             asks.push({ price, size, isUserOrder: false });
         }
     }
-
-    // Sort bids in descending order and asks in ascending order
-    bids.sort((a, b) => b.price - a.price);
-    asks.sort((a, b) => a.price - b.price);
 
     const orderBookData = {
         bids,

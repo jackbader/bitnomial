@@ -9,14 +9,17 @@
     transition: all 0.3s;
 }
 
+.button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .button:hover {
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 .button:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(255, 255, 255, 0.5);
 }
 
 .buy,
@@ -32,10 +35,7 @@
 
 .buy:hover {
     background: linear-gradient(to right, #05d9e8, #05d9e8);
-}
-
-.buy:focus {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(5, 217, 232, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 .sell {
@@ -46,15 +46,7 @@
 
 .sell:hover {
     background: linear-gradient(to right, #ff0000, #ff0000);
-}
-
-.sell:focus {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(255, 0, 0, 0.5);
-}
-
-.button.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 .default {
@@ -65,8 +57,4 @@
 
 .default:hover {
     background: linear-gradient(to right, var(--cyber-teal), var(--cyber-teal));
-}
-
-.default:focus {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(0, 86, 120, 0.5);
 }

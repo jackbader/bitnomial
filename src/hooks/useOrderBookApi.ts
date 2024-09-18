@@ -11,11 +11,11 @@ const useOrderBookApi = (ticker: string) => {
 
         // empty order book
         // const mockData = {
-        //   asks: [],
-        //   bids: [],
-        //   lastTradedPrice: 50000,
-        //   ticker: "BTCUSDT",
-        //   tickerDisplayName: "BTC/USDT",
+        //     asks: [],
+        //     bids: [],
+        //     lastTradedPrice: 50000,
+        //     ticker: 'BTCUSDT',
+        //     tickerDisplayName: 'BTC/USDT',
         // };
 
         setOrderBookData(mockData);
