@@ -28,10 +28,12 @@
 
 .askRowText {
     color: var(--cyber-pink);
+    background-color: rgba(255, 0, 0, 0.1);
 }
 
 .bidRowText {
     color: var(--cyber-green);
+    background-color: rgba(0, 255, 0, 0.1);
 }
 
 .centerRowText {
@@ -44,4 +46,3 @@
     color: var(--cyber-orange);
     margin-left: 4px;
 }
-

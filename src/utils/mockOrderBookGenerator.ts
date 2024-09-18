@@ -1,36 +1,32 @@
-import { OrderBookData, OrderBookEntry } from "../types/orderBook";
+import { OrderBookData, OrderBookEntry } from '../types/orderBook';
 
-export function generateMockOrderBookData(
-  ticker: string,
-  length: number = 2000
-): OrderBookData {
-  const bids: OrderBookEntry[] = [];
-  const asks: OrderBookEntry[] = [];
+export function generateMockOrderBookData(ticker: string, length: number = 2000): OrderBookData {
+    const bids: OrderBookEntry[] = [];
+    const asks: OrderBookEntry[] = [];
 
-  // TODO clean up and make this more random
-  for (let i = 0; i < length; i++) {
-    const price =
-      i < length / 2 ? 50000 - i * 10 : 50010 + (i - length / 2) * 10;
-    const size = Math.floor(Math.random() * 100) + 1;
+    // TODO clean up and make this more random
+    for (let i = 0; i < length; i++) {
+        const price = i < length / 2 ? 50000 - i * 10 : 50010 + (i - length / 2) * 10;
+        const size = Math.floor(Math.random() * 100) + 1;
 
-    if (i < length / 2) {
-      bids.push({ price, size, isUserOrder: false });
-    } else {
-      asks.push({ price, size, isUserOrder: false });
+        if (i < length / 2) {
+            bids.push({ price, size, isUserOrder: false });
+        } else {
+            asks.push({ price, size, isUserOrder: false });
+        }
     }
-  }
 
-  // Sort bids in descending order and asks in ascending order
-  bids.sort((a, b) => b.price - a.price);
-  asks.sort((a, b) => a.price - b.price);
+    // Sort bids in descending order and asks in ascending order
+    bids.sort((a, b) => b.price - a.price);
+    asks.sort((a, b) => a.price - b.price);
 
-  const orderBookData = {
-    bids,
-    asks,
-    ticker,
-    tickerDisplayName: "BTC/USD",
-    lastTradedPrice: 50000,
-  };
+    const orderBookData = {
+        bids,
+        asks,
+        ticker,
+        tickerDisplayName: 'BTC/USD',
+        lastTradedPrice: 50000,
+    };
 
-  return orderBookData;
+    return orderBookData;
 }

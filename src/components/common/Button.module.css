@@ -1,0 +1,72 @@
+.button {
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 0.375rem;
+    transition: all 0.3s;
+}
+
+.button:hover {
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.buy,
+.sell {
+    font-size: 1.125rem;
+}
+
+.buy {
+    background: linear-gradient(to right, #05d9e8, #005678);
+    color: #d1f7ff;
+    border-color: #05d9e8;
+}
+
+.buy:hover {
+    background: linear-gradient(to right, #05d9e8, #05d9e8);
+}
+
+.buy:focus {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(5, 217, 232, 0.5);
+}
+
+.sell {
+    background: linear-gradient(to right, #ff0000, #990000);
+    color: #ffffff;
+    border-color: #ff0000;
+}
+
+.sell:hover {
+    background: linear-gradient(to right, #ff0000, #ff0000);
+}
+
+.sell:focus {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(255, 0, 0, 0.5);
+}
+
+.button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.default {
+    background: linear-gradient(to right, var(--cyber-teal), var(--cyber-dark-navy));
+    color: var(--cyber-light-blue);
+    border-color: var(--cyber-teal);
+}
+
+.default:hover {
+    background: linear-gradient(to right, var(--cyber-teal), var(--cyber-teal));
+}
+
+.default:focus {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(0, 86, 120, 0.5);
+}

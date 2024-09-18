@@ -1,0 +1,42 @@
+.submitOrderContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.submitOrderButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.submitOrderButtons button {
+    width: 100%;
+}
+
+.input {
+    background-color: var(--cyber-dark-navy);
+    border: 2px solid var(--cyber-blue);
+    border-radius: 4px;
+    color: var(--cyber-light-blue);
+    font-size: 16px;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.input:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--cyber-blue);
+}
+
+.input::placeholder {
+    color: var(--cyber-blue);
+}
+
+.error {
+    color: var(--cyber-red);
+    font-size: 14px;
+    text-align: center;
+}
