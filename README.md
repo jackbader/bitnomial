@@ -14,9 +14,9 @@ To install the project dependencies, follow these steps:
 2. Navigate to the project directory in your terminal.
 3. Run the following command to install the dependencies:
 
-   ```
-   bun install
-   ```
+    ```
+    bun install
+    ```
 
 ## Running the Application
 

@@ -1,0 +1,13 @@
+:root {
+    --white: #ffffff;
+    --cyber-pink: #ff2a6d;
+    --cyber-light-blue: #d1f7ff;
+    --cyber-blue: #05d9e8;
+    --cyber-teal: #005678;
+    --cyber-dark-navy: #01012b;
+    --cyber-black: #010015;
+    --cyber-green: #00ff99;
+    --cyber-orange: #ffa500;
+    --cyber-red: #ff0000;
+    --cyber-blue-transparent: rgb(5 217 232 / 0.2);
+}
